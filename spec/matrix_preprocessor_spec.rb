@@ -1,4 +1,4 @@
-require "./cover_solver"
+require "matrix_preprocessor"
 require "byebug"
 
 RSpec.describe MatrixPreprocessor do
@@ -55,6 +55,33 @@ RSpec.describe MatrixPreprocessor do
         expect(data_object.left.right).to eq data_object
         expect(data_object.right).to be_a DataObject
         expect(data_object.right.left).to eq data_object
+      end
+    end
+
+    context "flat matrix" do
+      let(:matrix) do
+        [
+          [0, 0, 1, 0, 1]
+        ]
+      end
+
+      it "links the column objects" do
+        root = subject.call
+
+        expect(root.right.right.right.right.right.right).to eq root
+        expect(root.left.left.left.left.left.left).to eq root
+      end
+
+      it "links the data objects objects" do
+        root = subject.call
+
+        col = root.right
+        expect(col.down).to eq col
+        expect(col.up).to eq col
+
+        col = root.right.right.right
+        expect(col.down.down).to eq col
+        expect(col.up.up).to eq col
       end
     end
   end
