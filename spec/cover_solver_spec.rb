@@ -1,4 +1,5 @@
 require "cover_solver"
+require "byebug"
 
 RSpec.describe CoverSolver do
   subject { described_class.new(matrix) }
@@ -9,7 +10,8 @@ RSpec.describe CoverSolver do
         []
       end
 
-      it "returns an empty array" do
+      it "raises an error" do
+        expect { subject.call }.to raise_error(CoverSolver::InvalidMatrixSize)
       end
     end
 
@@ -22,8 +24,15 @@ RSpec.describe CoverSolver do
           ]
         end
 
-        it "is ok" do
-          subject.call
+        it "finds the solution" do
+          solutions = subject.call
+          expect(solutions.count).to eq 1
+          expect(solutions.first).to eq(
+            [
+              [1, 0],
+              [0, 1]
+            ]
+          )
         end
       end
 
@@ -39,8 +48,16 @@ RSpec.describe CoverSolver do
           ]
         end
 
-        it "is ok" do
-          subject.call
+        it "finds the only solution" do
+          solutions = subject.call
+          expect(solutions.count).to eq 1
+          expect(solutions.first).to eq(
+            [
+              [1, 0, 0, 1, 0, 0, 0],
+              [0, 1, 0, 0, 0, 0, 1],
+              [0, 0, 1, 0, 1, 1, 0]
+            ]
+          )
         end
       end
     end
@@ -54,8 +71,14 @@ RSpec.describe CoverSolver do
         ]
       end
 
-      it "is ok" do
-        subject.call
+      it "enumerates all the solutions" do
+        solutions = subject.call
+        expect(solutions.to_a).to eq(
+          [
+            [[1, 1]],
+            [[1, 0], [0, 1]]
+          ]
+        )
       end
     end
 
@@ -68,8 +91,10 @@ RSpec.describe CoverSolver do
           ]
         end
 
-        it "is ok" do
-          subject.call
+        it "doesn't find any solution" do
+          solutions = subject.call
+          expect(solutions.count).to eq 0
+          expect(solutions.first).to be nil
         end
       end
     end

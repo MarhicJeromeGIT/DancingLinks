@@ -7,23 +7,40 @@ require "matrix_preprocessor"
 
 # Solves the cover problem with algorithm "X"
 class CoverSolver
+  class InvalidMatrixSize < StandardError; end
+
   attr_reader :matrix
+  attr_reader :column_count
 
   def initialize(matrix)
     @matrix = matrix
+    # sanity check
+    if !matrix.is_a?(Array) || matrix.size == 0 || matrix[0].size == 0
+      raise(InvalidMatrixSize, "non-empty 2-dimensional array expected, got #{matrix.inspect}")
+    end
+
+    @column_count = matrix[0].size
   end
 
+  # Solve the exact cover problem for the given matrix
+  # @return [Enumerator] An enumeration of the all the possible solutions
   def call
     root = MatrixPreprocessor.new(matrix).call
-    search(0, root)
+    Enumerator.new do |y|
+      search(0, root, y)
+    end
   end
 
   private
 
-  def search(k, root, solution = [])
+  # @param k [Integer] solution "deepness"
+  # @param root [ColumnObject] root
+  # @param y [Yielder] enumerator yielder
+  # @param solution [Array<DataObject>] current solution
+  def search(k, root, y, solution = [])
     if root.right == root
-      print_solution(solution)
-      return solution
+      y.yield format_solution(solution)
+      return
     end
 
     column = choose_column(root)
@@ -43,7 +60,7 @@ class CoverSolver
         j = j.right
       end
 
-      search(k + 1, root, solution)
+      search(k + 1, root, y, solution)
 
       r = solution[k]
       column = r.column
@@ -61,23 +78,24 @@ class CoverSolver
     end
 
     uncover_column(column)
-
-    [] # no solution
   end
 
-  def print_solution(solution)
-    puts "Solution"
+  # @solution consists in an array of DataObject,
+  # formats it to an array of 0 and 1 rows (corresponding to some rows of the given matrix)
+  # @return [Array<Array>] Subset of the matrix rows corresponding to an exact cover
+  def format_solution(solution)
+    rows = []
     solution.each do |data_object|
-      row = []
+      row = Array.new(column_count, 0)
       current = data_object
       loop do
-        row << current.column.name
+        row[current.column.name.to_i] = 1
         current = current.right
         break if current == data_object
       end
-      puts row.join(" ")
+      rows << row
     end
-    puts "_____"
+    rows
   end
 
   def choose_column(root)
