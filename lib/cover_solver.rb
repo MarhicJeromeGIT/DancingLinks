@@ -4,7 +4,6 @@
 # @author Marhic Jerome 2019
 
 require "matrix_preprocessor"
-require "pry"
 
 # Solves the cover problem with algorithm "X"
 class CoverSolver
@@ -21,39 +20,64 @@ class CoverSolver
 
   private
 
-  def search(k, root)
-    puts "search #{k}"
+  def search(k, root, solution = [])
+    if root.right == root
+      print_solution(solution)
+      return solution
+    end
 
     column = choose_column(root)
     cover_column(column)
 
-    current = column.down
+    r = column.down
     loop do
-      break if current == column
+      break if r == column
 
-      right = current.right
+      solution[k] = r
+
+      j = r.right
       loop do
-        break if right == current
+        break if j == r
 
-        cover_column(right)
-        right = right.right
+        cover_column(j.column)
+        j = j.right
       end
 
-      search(k + 1, root)
+      search(k + 1, root, solution)
 
-      j = current.left
+      r = solution[k]
+      column = r.column
+
+      j = r.left
       loop do
-        break if j == current
+        break if j == r
 
-        uncover_column(left)
+        uncover_column(j.column)
 
         j = j.left
       end
 
-      current = column.down
+      r = r.down
     end
 
     uncover_column(column)
+
+    [] # no solution
+  end
+
+  def print_solution(solution)
+    puts "Solution"
+    solution.each do |data_object|
+      row = []
+      current = data_object
+      loop do
+        row << current.column.name
+        current = current.right
+        break if current == data_object
+      end
+      puts row.join(" ")
+    end
+    puts "_____"
   end
 
   def choose_column(root)

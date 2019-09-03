@@ -3,12 +3,12 @@ require "data_object"
 # a column header
 class ColumnObject < DataObject
   attr_reader :s # size (number of 1 in the column)
-  attr_reader :n # name
+  attr_reader :name # name
 
-  def initialize(s, n)
+  def initialize(s, name)
     super(nil)
 
     @s = s
-    @n = n
+    @name = name
   end
 end

@@ -13,15 +13,65 @@ RSpec.describe CoverSolver do
       end
     end
 
-    let(:matrix) do
-      [
-        [0, 1],
-        [1, 0]
-      ]
+    context "when there is a solution" do
+      context "simple matrix" do
+        let(:matrix) do
+          [
+            [0, 1],
+            [1, 0]
+          ]
+        end
+
+        it "is ok" do
+          subject.call
+        end
+      end
+
+      context "complex matrix" do
+        let(:matrix) do
+          [
+            [0, 0, 1, 0, 1, 1, 0],
+            [1, 0, 0, 1, 0, 0, 1],
+            [0, 1, 1, 0, 0, 1, 0],
+            [1, 0, 0, 1, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 1],
+            [0, 0, 0, 1, 1, 0, 1]
+          ]
+        end
+
+        it "is ok" do
+          subject.call
+        end
+      end
     end
 
-    it "is ok" do
-      subject.call
+    context "when there are several solutions" do
+      let(:matrix) do
+        [
+          [1, 1],
+          [0, 1],
+          [1, 0]
+        ]
+      end
+
+      it "is ok" do
+        subject.call
+      end
+    end
+
+    context "when there is no solution" do
+      context "simple matrix" do
+        let(:matrix) do
+          [
+            [0, 0],
+            [1, 0]
+          ]
+        end
+
+        it "is ok" do
+          subject.call
+        end
+      end
     end
   end
 end

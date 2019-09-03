@@ -1,5 +1,4 @@
 require "matrix_preprocessor"
-require "byebug"
 
 RSpec.describe MatrixPreprocessor do
   subject { described_class.new(matrix) }
@@ -25,7 +24,7 @@ RSpec.describe MatrixPreprocessor do
 
       it "returns a root object" do
         root = subject.call
-        expect(root.n).to eq "root"
+        expect(root.name).to eq "root"
       end
 
       it "links the root to the column headers" do
